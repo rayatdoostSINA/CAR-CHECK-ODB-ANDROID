@@ -53,6 +53,18 @@ jobs:
       - name: Sync Capacitor Android Project
         run: npx cap sync android
 
+      - name: Restore Capacitor Android Binary Assets
+        shell: bash
+        run: |
+          template_dir="${RUNNER_TEMP}/capacitor-android-template"
+          mkdir -p "${template_dir}"
+          tar -xzf node_modules/@capacitor/cli/assets/android-template.tar.gz -C "${template_dir}"
+
+          while IFS= read -r -d '' source_file; do
+            relative_path="${source_file#"${template_dir}/app/src/main/res/"}"
+            install -Dm0644 "${source_file}" "android/app/src/main/res/${relative_path}"
+          done < <(find "${template_dir}/app/src/main/res" -type f -name '*.png' -print0)
+
       - name: Verify Gradle Wrapper Integrity
         run: echo "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172  android/gradle/wrapper/gradle-wrapper.jar" | sha256sum --check --strict
 
