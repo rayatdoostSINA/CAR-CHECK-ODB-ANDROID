@@ -37,13 +37,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install NPM Dependencies
-        run: npm ci || npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build Web Production Assets
         run: npm run build:pages
